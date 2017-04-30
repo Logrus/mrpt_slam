@@ -112,7 +112,7 @@ public:
   void observation(CSensoryFramePtr _sf, CObservationOdometryPtr _odometry);
 
 protected:
-  CMetricMapBuilderRBPF* mapBuilder;  ///< map builder
+  CMetricMapBuilderRBPF mapBuilder;  ///< map builder
   CActionCollectionPtr action;        ///< actions
   CSensoryFramePtr sf;                ///< observations
 

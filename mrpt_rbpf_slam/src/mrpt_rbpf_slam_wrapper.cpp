@@ -89,7 +89,7 @@ void PFslamWrapper::init()
   }
 
   // init slam
-  mapBuilder = new mrpt::slam::CMetricMapBuilderRBPF(rbpfMappingOptions);
+  mapBuilder = mrpt::slam::CMetricMapBuilderRBPF(rbpfMappingOptions);
   init_slam();
   init3Dwindow();
 }
@@ -158,7 +158,7 @@ void PFslamWrapper::laserCallback(const sensor_msgs::LaserScan& _msg)
     timeLastUpdate_ = sf->getObservationByIndex(0)->timestamp;
 
     tictac.Tic();
-    mapBuilder->processActionObservation(*action, *sf);
+    mapBuilder.processActionObservation(*action, *sf);
     t_exec = tictac.Tac();
     ROS_INFO("Map building executed in %.03fms", 1000.0f * t_exec);
     publishMapPose();
@@ -195,7 +195,7 @@ void PFslamWrapper::callbackBeacon(const mrpt_msgs::ObservationRangeBeacon& _msg
     timeLastUpdate_ = sf->getObservationByIndex(0)->timestamp;
 
     tictac.Tic();
-    mapBuilder->processActionObservation(*action, *sf);
+    mapBuilder.processActionObservation(*action, *sf);
     t_exec = tictac.Tac();
     ROS_INFO("Map building executed in %.03fms", 1000.0f * t_exec);
 
@@ -207,8 +207,8 @@ void PFslamWrapper::callbackBeacon(const mrpt_msgs::ObservationRangeBeacon& _msg
 void PFslamWrapper::publishMapPose()
 {
   // if I received new grid maps from 2D laser scan sensors
-  metric_map_ = mapBuilder->mapPDF.getCurrentMostLikelyMetricMap();
-  mapBuilder->mapPDF.getEstimatedPosePDF(curPDF);
+  metric_map_ = mapBuilder.mapPDF.getCurrentMostLikelyMetricMap();
+  mapBuilder.mapPDF.getEstimatedPosePDF(curPDF);
   if (metric_map_->m_gridMaps.size())
   {
     // publish map
@@ -369,14 +369,14 @@ bool PFslamWrapper::rawlogPlay()
       if (ros::ok())
       {
         tictac.Tic();
-        mapBuilder->processActionObservation(data[i].first, data[i].second);
+        mapBuilder.processActionObservation(data[i].first, data[i].second);
         t_exec = tictac.Tac();
         ROS_INFO("Map building executed in %.03fms", 1000.0f * t_exec);
 
         ros::Duration(rawlog_play_delay).sleep();
 
-        metric_map_ = mapBuilder->mapPDF.getCurrentMostLikelyMetricMap();
-        mapBuilder->mapPDF.getEstimatedPosePDF(curPDF);
+        metric_map_ = mapBuilder.mapPDF.getCurrentMostLikelyMetricMap();
+        mapBuilder.mapPDF.getEstimatedPosePDF(curPDF);
         // if I received new grid maps from 2D laser scan sensors
         if (metric_map_->m_gridMaps.size())
         {
@@ -445,7 +445,7 @@ void PFslamWrapper::publishTF()
 {
   // Most of this code was copy and pase from ros::amcl
   mrpt::poses::CPose3D robotPose;
-  mapBuilder->mapPDF.getEstimatedPosePDF(curPDF);
+  mapBuilder.mapPDF.getEstimatedPosePDF(curPDF);
 
   curPDF.getMean(robotPose);
 
